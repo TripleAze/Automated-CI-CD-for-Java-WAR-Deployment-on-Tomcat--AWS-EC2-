@@ -9,7 +9,7 @@ pipeline {
     environment {
         TOMCAT_IP = '34.224.51.100'
         TOMCAT_USER = 'tomcat'
-        WAR_FILE = 'target/hello-world.war'
+        WAR_FILE = 'simple-java-docker/target/hello-world.war'
     }
 
     stages {
@@ -21,7 +21,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                dir('simple-java-docker') {
+                    sh 'mvn clean package'
+                }
             }
         }
 
