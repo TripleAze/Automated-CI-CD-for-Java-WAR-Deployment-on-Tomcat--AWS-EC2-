@@ -1,8 +1,8 @@
-# 🚀 Automated CI/CD for Java WAR Deployment on AWS EC2
+# Automated CI/CD for Java WAR Deployment on AWS EC2
 
 This repository contains a fully automated pipeline for building and deploying a Java Maven web application to Apache Tomcat using Infrastructure as Code (Terraform) and Configuration Management (Ansible).
 
-## 🏗️ Architecture
+## Architecture
 - **Infrastructure**: AWS EC2 Instances (provisioned via Terraform).
 - **CI Server**: Jenkins (running Java 21).
 - **Application Server**: Apache Tomcat 10.1.50 (running Java 21).
@@ -11,7 +11,7 @@ This repository contains a fully automated pipeline for building and deploying a
 
 ---
 
-## 🛠️ Project Evolution & Debugging Log
+## Project Evolution & Debugging Log
 
 Building this pipeline involved several complex challenges. Below is a log of the key issues encountered and how they were resolved.
 
@@ -44,7 +44,7 @@ Building this pipeline involved several complex challenges. Below is a log of th
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 ```text
 .
 ├── ansible/            # Configuration Management (Java, Tomcat, Jenkins)
@@ -58,7 +58,7 @@ Building this pipeline involved several complex challenges. Below is a log of th
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Provision Infrastructure
 ```bash
@@ -82,11 +82,8 @@ ansible-playbook -i inventories/host.ini site.yml
 
 ---
 
-## 🧹 Cleanup
+## Cleanup
 To avoid AWS costs, use the included cleanup script:
 ```bash
 ./scripts/cleanup.sh
 ```
-
----
-*Created by Antigravity AI for the user Abubakar.*
