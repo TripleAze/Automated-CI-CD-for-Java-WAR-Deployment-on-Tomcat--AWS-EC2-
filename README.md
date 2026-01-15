@@ -42,18 +42,35 @@ Building this pipeline involved several complex challenges. Below is a log of th
 
 ---
 
+---
+
+## 📂 Project Structure
+```text
+.
+├── ansible/            # Configuration Management (Java, Tomcat, Jenkins)
+├── app/               # Java Maven Web Application
+├── docs/               # Architecture and Documentation
+├── scripts/            # Automation (Cleanup, etc.)
+├── terraform/          # Infrastructure as Code (AWS VPC, EC2, SG, IAM)
+├── Jenkinsfile         # CI/CD Orchestration
+└── README.md           # Project Overview & Debugging Log
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Provision Infrastructure
 ```bash
+cd terraform
 terraform init
 terraform apply -auto-approve
 ```
 
 ### 2. Configure Servers
-Update `Ansible/inventories/host.ini` with the new IPs and run:
+Update `ansible/inventories/host.ini` with the new IPs and run:
 ```bash
-cd Ansible
+cd ansible
 ansible-playbook -i inventories/host.ini site.yml
 ```
 
@@ -68,7 +85,7 @@ ansible-playbook -i inventories/host.ini site.yml
 ## 🧹 Cleanup
 To avoid AWS costs, use the included cleanup script:
 ```bash
-./cleanup.sh
+./scripts/cleanup.sh
 ```
 
 ---
