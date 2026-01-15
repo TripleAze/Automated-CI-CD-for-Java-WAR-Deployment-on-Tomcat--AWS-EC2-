@@ -16,6 +16,7 @@
         <h1>Hello from Jenkins CI/CD!</h1>
         <p>Current server time: <%= new Date() %></p>
         <p>This application was deployed automatically to Tomcat on EC2.</p>
+        <p style="color: #27ae60; font-weight: bold;">✅ Pipeline Test: Verification Successful!</p>
     </div>
 </body>
 </html>
