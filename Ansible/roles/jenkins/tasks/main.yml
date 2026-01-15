@@ -1,6 +1,6 @@
-- name: Install Java 17
+- name: Install Java 21
   apt:
-    name: openjdk-17-jdk
+    name: openjdk-21-jdk
     state: present
     update_cache: yes
 
@@ -25,6 +25,29 @@
     name: jenkins
     state: present
     update_cache: yes
+
+- name: Ensure Jenkins systemd override directory exists
+  file:
+    path: /etc/systemd/system/jenkins.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Set Jenkins to use Java 21 via systemd override
+  copy:
+    dest: /etc/systemd/system/jenkins.service.d/override.conf
+    content: |
+      [Service]
+      Environment="JENKINS_JAVA_CMD=/usr/lib/jvm/java-21-openjdk-amd64/bin/java"
+  register: jenkins_java_override
+
+- name: Reload systemd and restart Jenkins
+  systemd:
+    name: jenkins
+    state: restarted
+    daemon_reload: yes
+  when: jenkins_java_override.changed
 
 - name: Start and enable Jenkins
   systemd:
@@ -55,14 +78,20 @@
     group: jenkins
     mode: '0700'
 
+- name: Check if initial admin password exists
+  stat:
+    path: /var/lib/jenkins/secrets/initialAdminPassword
+  register: initial_password_file
+
 - name: Read initial admin password
   slurp:
     src: /var/lib/jenkins/secrets/initialAdminPassword
   register: admin_password_raw
+  when: initial_password_file.stat.exists
 
 - name: Set admin password fact
   set_fact:
-    jenkins_admin_password: "{{ admin_password_raw['content'] | b64decode | trim }}"
+    jenkins_admin_password: "{{ admin_password_raw['content'] | b64decode | trim if initial_password_file.stat.exists else (jenkins_admin_password | default('')) }}"
 
 - name: Install Jenkins plugins via CLI
   shell: "java -jar /opt/jenkins-cli.jar -s http://localhost:8080/ -auth admin:{{ jenkins_admin_password }} install-plugin {{ item }} -deploy"
@@ -98,3 +127,12 @@
   register: groovy_exec
   failed_when: "'Error' in groovy_exec.stderr"
   ignore_errors: yes
+
+- name: Verify Jenkins is running with Java 21
+  shell: "ps aux | grep jenkins"
+  register: jenkins_process
+  changed_when: false
+
+- name: Print Jenkins process info
+  debug:
+    var: jenkins_process.stdout_lines
