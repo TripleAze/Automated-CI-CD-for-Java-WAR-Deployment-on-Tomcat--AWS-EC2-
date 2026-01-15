@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3' // Assumes Maven is configured in Jenkins Global Tool Configuration
-        jdk 'Java 17'   // Assumes JDK is configured in Jenkins Global Tool Configuration
+        maven 'Maven 3' 
+        jdk 'Java 21'   
     }
 
     environment {
-        TOMCAT_IP = '13.222.169.186'
+        TOMCAT_IP = '34.224.51.100'
         TOMCAT_USER = 'tomcat'
         WAR_FILE = 'target/hello-world.war'
     }
