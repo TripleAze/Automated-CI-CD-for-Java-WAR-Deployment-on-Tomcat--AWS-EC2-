@@ -2,11 +2,11 @@
 
 This repository contains a fully automated pipeline for building and deploying a Java Maven web application to Apache Tomcat using Infrastructure as Code (Terraform) and Configuration Management (Ansible).
 
-## Architecture
+## 🏗️ Architecture
 - **Infrastructure**: AWS EC2 Instances (provisioned via Terraform).
-- **CI Server**: Jenkins (running Java 21).
-- **Application Server**: Apache Tomcat 10.1.50 (running Java 21).
-- **Orchestration**: Ansible (packages, services, and security configuration).
+- **CI Server**: Jenkins (running Java 21) - Securely served via Nginx Reverse Proxy (HTTPS).
+- **Application Server**: Apache Tomcat 10.1.50 (running Java 21) - Securely served via Nginx Reverse Proxy (HTTPS).
+- **Orchestration**: Ansible (packages, services, security, and SSL configuration).
 - **Pipeline**: Jenkins Pipeline (Declarative `Jenkinsfile`).
 
 ---
@@ -39,6 +39,10 @@ Building this pipeline involved several complex challenges. Below is a log of th
 ### 6. Health Check Failure (Race Condition)
 - **Issue**: The `Health Check` stage failed immediately after the `Deploy` stage because `curl` was executed while Tomcat was still initializing.
 - **Solution**: Implemented a **15-second sleep** and a **retry(5)** loop in the `Jenkinsfile` to give Tomcat enough time to deploy the WAR file fully before checking for a 200 OK response.
+
+### 7. Implementation of HTTPS/SSL
+- **Goal**: Secure the Jenkins UI and Tomcat application with SSL.
+- **Solution**: Configured Nginx as a reverse proxy on both servers. Integrated **Let's Encrypt (Certbot)** to automate the issuance and renewal of SSL certificates. Updated the Jenkins pipeline to perform health checks over `https`.
 
 ## Project Structure
 ```text
@@ -73,6 +77,7 @@ ansible-playbook -i inventories/host.ini site.yml
 - Set the GitHub repo to: `https://github.com/TripleAze/Automated-CI-CD-for-Java-WAR-Deployment-on-Tomcat--AWS-EC2-`
 - Set Branch to `*/main`.
 - Point Script Path to `Jenkinsfile`.
+- **Note**: Access Jenkins at `https://abu-jenkins.chickenkiller.com` and Tomcat at `https://abu-java.chickenkiller.com/hello-world/`.
 
 ## Cleanup
 To avoid AWS costs, use the included cleanup script:

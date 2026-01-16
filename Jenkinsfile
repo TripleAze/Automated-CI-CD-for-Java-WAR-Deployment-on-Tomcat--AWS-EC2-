@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        TOMCAT_IP = '34.224.51.100'
+        TOMCAT_DOMAIN = 'abu-java.chickenkiller.com'
         TOMCAT_USER = 'tomcat'
         WAR_FILE = 'app/target/hello-world.war'
     }
@@ -31,8 +31,8 @@ pipeline {
             steps {
                 sshagent(['tomcat-ssh-key']) {
                     sh """
-                        scp -o StrictHostKeyChecking=no ${WAR_FILE} ubuntu@${TOMCAT_IP}:/home/ubuntu/tmp/
-                        ssh -o StrictHostKeyChecking=no ubuntu@${TOMCAT_IP} "sudo mv /home/ubuntu/tmp/hello-world.war /opt/tomcat/webapps/ && sudo systemctl restart tomcat"
+                        scp -o StrictHostKeyChecking=no ${WAR_FILE} ubuntu@${TOMCAT_DOMAIN}:/home/ubuntu/tmp/
+                        ssh -o StrictHostKeyChecking=no ubuntu@${TOMCAT_DOMAIN} "sudo mv /home/ubuntu/tmp/hello-world.war /opt/tomcat/webapps/ && sudo systemctl restart tomcat"
                     """
                 }
             }
@@ -43,7 +43,7 @@ pipeline {
                 echo "Waiting for Tomcat to start..."
                 sleep 15
                 retry(5) {
-                    sh "curl -f http://${TOMCAT_IP}:8080/hello-world/ || (sleep 10 && exit 1)"
+                    sh "curl -f https://${TOMCAT_DOMAIN}/hello-world/ || (sleep 10 && exit 1)"
                 }
             }
         }

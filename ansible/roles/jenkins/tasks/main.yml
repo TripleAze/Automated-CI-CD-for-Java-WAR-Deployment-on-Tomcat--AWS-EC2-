@@ -136,3 +136,53 @@
 - name: Print Jenkins process info
   debug:
     var: jenkins_process.stdout_lines
+
+- name: Install Nginx and Certbot dependencies
+  apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Create Nginx configuration for Jenkins proxy
+  template:
+    src: subdomain.conf.j2
+    dest: /etc/nginx/sites-available/jenkins
+  vars:
+    domain_name: "{{ jenkins_domain }}"
+
+- name: Enable Jenkins site configuration
+  file:
+    src: /etc/nginx/sites-available/jenkins
+    dest: /etc/nginx/sites-enabled/jenkins
+    state: link
+
+- name: Remove default Nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Test Nginx config and restart
+  service:
+    name: nginx
+    state: restarted
+
+- name: Obtain Let's Encrypt certificate
+  shell: >
+    certbot --nginx 
+    -d {{ jenkins_domain }} 
+    --non-interactive 
+    --agree-tos 
+    -m {{ ssl_email }} 
+    --redirect
+  args:
+    creates: "/etc/letsencrypt/live/{{ jenkins_domain }}/fullchain.pem"
+
+- name: Ensure Certbot renewal timer is running
+  systemd:
+    name: certbot.timer
+    enabled: yes
+    state: started
+
+    

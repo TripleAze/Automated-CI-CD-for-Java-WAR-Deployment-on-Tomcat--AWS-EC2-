@@ -17,3 +17,6 @@ RUN javac Main.java
 
 # Run the Java application when the container starts
 CMD ["java", "Main"]
+
+
+#Add in the readme that we added a pom.xml and also that we had problems with the ec2(the one wheree we provisioned jenkins server), resources (mostly ram usage spiked) and ec2 became unresponsive we restated the server and it was able to hold up but recomend using a larger ec2 instance

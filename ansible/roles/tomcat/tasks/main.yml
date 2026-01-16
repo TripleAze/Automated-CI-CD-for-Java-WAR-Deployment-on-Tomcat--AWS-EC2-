@@ -86,3 +86,52 @@
     name: tomcat
     state: started
     enabled: yes
+
+- name: Install Nginx and Certbot dependencies
+  apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: present
+    update_cache: yes
+
+- name: Create Nginx configuration for Tomcat proxy
+  template:
+    src: subdomain.conf.j2
+    dest: /etc/nginx/sites-available/tomcat
+  vars:
+    domain_name: "{{ tomcat_domain }}"
+
+- name: Enable Tomcat site configuration
+  file:
+    src: /etc/nginx/sites-available/tomcat
+    dest: /etc/nginx/sites-enabled/tomcat
+    state: link
+
+- name: Remove default Nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Test Nginx config and restart
+  service:
+    name: nginx
+    state: restarted
+
+- name: Obtain Let's Encrypt certificate
+  shell: >
+    certbot --nginx 
+    -d {{ tomcat_domain }} 
+    --non-interactive 
+    --agree-tos 
+    -m {{ ssl_email }} 
+    --redirect
+  args:
+    creates: "/etc/letsencrypt/live/{{ tomcat_domain }}/fullchain.pem"
+
+- name: Ensure Certbot renewal timer is running
+  systemd:
+    name: certbot.timer
+    enabled: yes
+    state: started
