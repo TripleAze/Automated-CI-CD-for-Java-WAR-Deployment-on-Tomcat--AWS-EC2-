@@ -45,11 +45,11 @@ resource "aws_security_group" "tomcat_sg" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "SSH from Jenkins"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.jenkins_sg.id]
+    description = "SSH from anywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
