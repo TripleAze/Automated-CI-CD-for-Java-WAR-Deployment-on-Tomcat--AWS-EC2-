@@ -44,11 +44,20 @@ Building this pipeline involved several complex challenges. Below is a log of th
 - **Goal**: Secure the Jenkins UI and Tomcat application with SSL.
 - **Solution**: Configured Nginx as a reverse proxy on both servers. Integrated **Let's Encrypt (Certbot)** to automate the issuance and renewal of SSL certificates. Updated the Jenkins pipeline to perform health checks over `https`.
 
+### 8. Server Resource constraints (RAM Usage)
+- **Issue**: Encountered intermittent unresponsiveness on the Jenkins server (especially during build and plugin installation).
+- **Diagnosis**: RAM usage spiked due to the resource-intensive nature of Jenkins on a small instance size (t2.micro).
+- **Workaround**: Manually restarted the instance to clear memory and chose a modular Ansible approach to reduce long-running processes.
+- **Recommendation**: For production environments, it is **highly recommended** to use at least a `t3.medium` instance for Jenkins to ensure stability.
+
 ## Project Structure
 ```text
 .
 ├── ansible/            # Configuration Management (Java, Tomcat, Jenkins)
 ├── app/               # Java Maven Web Application
+│   ├── src/           # Java Source Code
+│   ├── pom.xml        # Maven Project Object Model (Dependencies & Build)
+│   └── Dockerfile     # (Optional) Application Dockerization
 ├── docs/               # Architecture and Documentation
 ├── scripts/            # Automation (Cleanup, etc.)
 ├── terraform/          # Infrastructure as Code (AWS VPC, EC2, SG, IAM)
